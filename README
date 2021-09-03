@@ -1,0 +1,69 @@
+PennBook Group G12
+
+1. Full names and logins of all team members:
+- Lydia Ma: malydia
+- Nikhil Kona: nkona
+- Jennifer Yen: jenyen
+
+2. Description of features implemented:
+- Users can create accounts from the signup page.
+- Users can login from the login page.
+- Users are password protected with encryption (SHA256) to prevent incorrect access
+- Each user has a unique profile page that contains information such as full name,
+affiliation, birthday, and interests. These fields can be updated dynamically.
+- Each user has a home page with a timeline of status updates, new friendships, and
+profile updates made by friends. 
+- Users can post statuses from the homepage and this will be reflected on friends' homepages.
+- Users can comment on posts on the homepage. 
+- Users can see a list of active friends from the homepage that updates dynamically.
+- Users can search for other users in the network through the searchbar. 
+- User's time line/home feed is dynamically updated
+- Users can post on friends' "walls" (i.e. public messages).
+- Users can see their friends' friends on their profile (friendprofile.ejs)
+- Users can add or delete friends. The add functionality is implemented on nonfriendprofile.ejs
+and the delete functionality is implemented on friendprofile.ejs.
+- Users can chat with one another. Each chat is generated automatically and the contents of
+a chat session are persistent.
+- Chat names can be updated dynamically. 
+- Chat messages are ordered consistently.
+- Chat messages scroll within the chat itself, not the window.
+- Can temporarily leave chat by switching tabs, permanently by unfriending a user
+- When a user receives a chat from another user, he/she receives a alert notification on the homepage.
+- Friend recommendation mapreduce can be run from the command line. 
+- Friend rec inputs are a two way list of type:name for users, interests, affiliations and outputs friend recs for all users
+- Friend visualizer displays all friends. Upon clicking a friend node, visualizer will display that friend's friends who are not friends with the current user logged in, but have the same affiliates. 
+- Deployed an earlier version of our project on EC2
+
+3. Extra credit claimed:
+EC - Users can change the names of chats and will be dynamically updated for both users
+EC - Auto scrolling in chat module so that chats are self-contained and don’t stretch page
+EC - Chats can be opened when target user is offline, and messages sent can be seen when they log in and go to the chat page
+EC - winter snow
+
+4. List of source files included:
+- app.js
+- loader.js
+- routes/routes.js
+- models/database.js
+- views/activechat.ejs
+- views/chat.ejs
+- views/friendprofile.ejs
+- views/friendvisualizer.ejs
+- views/home.ejs
+- views/login.ejs
+- views/nonfriendprofile.ejs
+- views/profile.ejs
+- views/signup.ejs
+- src/mapreduce/*
+- package.json
+- config.json
+- README
+
+5. All code was written by us. 
+
+6. Instructions for building the project:
+- Run npm install to install packages from package.json.
+- Run npm install vogels
+- Run npm install socket.io
+- Run node app.js. 
+- Open localhost:8080.

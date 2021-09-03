@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Log In</title>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<script>
+			function postActiveStatusTrue(email) {
+  				$.post('/updateactivestatus', {
+  					email: document.getElementById("emailInput").value,
+  					status: new Boolean(true)
+  				}, function(err, data) {
+  					if (err) {
+  						console.log("error setting active status to true");
+  					} else {
+  						console.log("successfully set active status to true");
+  					}
+  				});
+  			}
+		</script>
+		
+		<style>
+			* {
+			 box-sizing: border-box;
+			}
+			body {
+				font-family: Arial;
+				padding: 10px;
+				background: #f1f1f1;	//8am change color
+				font-weight: 50;
+				text-align: center;						
+			}
+			.header {
+				float: left;
+				text-align: center;
+				padding: 2px 2px;
+				margin-bottom: 10px;
+				//background: white;
+			}
+			.header h1 {
+				  font-size: 35px;
+				  color: white;	
+				}
+			.topnav {
+			  overflow: hidden;
+			  text-align: center;
+			  background-color: #00008B;
+			  margin-bottom:10px;
+			  padding-bottom: 10px;
+			}
+			.div-signup {
+				margin-top: 20px;
+			}
+		</style>
+	</head>
+	
+	<body>
+	<div class="topnav">
+		<h1 style="color:white"> *̣̥☆‧❄‧̩̥·‧☃‧̩̥·<b><i>PennBook</i></b>‧•̥‧·‧̩̥❄‧·☆*̣̥  </h1>  
+
+			<div id="notifications">
+		    	<span id="notifications-count"></span>
+		  		<div id="notifications-dropdown"></div>
+		  	</div>
+		</div>
+		<h1>Log in to your account!</h1>
+		<div> 
+			<%if (message != null) { %>
+			<p><font color="red"><%= message %></p>
+			<% } %>
+			<font color="black">			
+			<form class="form-horizontal" action="/checklogin" method="post">
+			  <div class="form-group">
+			    <input type="text" name="emailInput" placeholder="email" id="emailInput">
+			  </div>
+			  <div class="form-group">
+			    <input type="password" name="passwordInput" placeholder="password">
+			  </div>
+			  <div id="loginButton">
+			  	<button type="submit" class="btn btn-success" onclick="postActiveStatusTrue()">Log In</button>
+			  </div>
+			</form>
+		</div>
+		
+		<div class="div-signup">
+			<p id="signup">Don't have an account? <a href="/signup">Sign up here!</a></p>	
+		</div>
+		
+		<p>Author: G12</p>
+	</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Friend Profile</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	  	<script type="text/javascript">
+	  		currUser = "";
+	  		currName = "";
+	  		currAffiliation = "";
+	  		currBirthday = "";
+	  		currInterests = "";
+	  		currPubMsgs = [];
+	  		latestTimestamp = 0;
+	  	
+	  		// LOADING BASIC PROFILE INFO AND UPDATE FIELDS
+	  		var loadProfile = function() {
+	  			console.log("currUser is: " + currUser);
+	  			$.getJSON('/friendprofileinfo/:' + currUser, function(data) {
+	  				document.getElementById('header').innerHTML = data.name + "'s profile";
+	  				document.getElementById('name').innerHTML = data.name;
+	  				document.getElementById('affiliation').innerHTML = 'Affiliation: ' + data.affiliation;
+	  				if (data.interests == undefined) {
+	  					document.getElementById('interests').innerHTML = 'Interests need to be updated!'
+	  				} else {
+	  					document.getElementById('interests').innerHTML = 'Interests: ' + data.interests; 
+	  				}
+	  				if (data.birthday == '1970-01-01T00:00:00.000Z') {
+	  					document.getElementById('birthday').innerHTML = 'Birthday needs to be updated!';
+	  				} else {
+	  					document.getElementById('birthday').innerHTML = 'Birthday: ' + data.birthday;
+	  				}
+	  			});
+	  		}
+		  	
+		  	var loadFriends = function() {
+	  			$.getJSON('/getfriends/:' + currUser, function(data) {
+	  				console.log("friends: " + data);
+	  				
+	  				var friendHTMLOut = '';
+	  				for (var i = 0; i < data.length; i++) {
+	  					var friendEmail = data[i];
+	  					
+	  					friendHTMLOut += 
+	  					'<ul id =' + '"' + friendEmail + '"' + ' onClick="getFriendPage(\'' + friendEmail + '\')"><a>' + friendEmail + '</a></ul>';
+	  					
+	  					// console.log(friendHTMLOut);
+	  				}
+	  				$("#friends-container").append(friendHTMLOut);
+	  			});
+	  		}
+	  		
+	  		function loadPubMsgs() {
+	  			// console.log("loading public messages");
+	  			
+	  			$.post('/getpublicmsgs/:' + currUser, {
+	  				time: 0
+	  			}, function(data) {
+	  				data = JSON.parse(data);
+	  				currPubMsgs = data;
+	  				// console.log(data);
+	  				
+	  				var pubMsgsHTMLOut = '';
+	  				for (var i = data.length - 1; i >= 0; i--) {
+	  					var message = data[i].message;
+	  					
+	  					pubMsgsHTMLOut += 
+	  					'<ul>' + message + '</ul>';
+	  					
+	  					var inCurrPubMsgs = false;
+		  				for (var j = 0; j < currPubMsgs.length; j++) {
+		  					if (currPubMsgs[i] == data[i].message) {
+		  						inCurrPubMsgs = true;
+		  						break;
+		  					}
+		  				}
+		  				if (!inCurrPubMsgs) {
+		  					currPubMsgs.push(data[i].message);
+		  				}
+	  				}
+	  				
+	  				$("#pub-msgs").append(pubMsgsHTMLOut);
+	  				if (data.length != 0) {
+	  					latestTimestamp = data[data.length - 1].createdAt;
+	  				}
+	  			});
+	  		}
+	  		
+	  		function postPubMsg() {
+	  			console.log("posting on friend's profile");
+	  			
+	  			$.post('/sendpublicmsg/:' + currUser, {
+	  				message: document.getElementById('status-content').value
+	  			}, function(data) {
+	  				$("#status-content").val('');
+	  				console.log(data);
+	  			});
+	  		}
+	  		
+	  		function getFriendPage(friendEmail) {
+	  			console.log(friendEmail);
+	  			
+	  			var targetFriend = document.getElementById(friendEmail).innerHTML;
+	  			window.location.href = '/friendprofile/:' + friendEmail;
+	  		}
+	  		
+	  		function removeFriend() {
+	  			console.log("removing " + currUser + " as your friend");
+	  			$.post('/deletefriend', {
+	  				friend: currUser
+	  			}, function(data) {
+	  				console.log(data);
+	  				$.post('/deletechat', {
+	  					friend: currUser
+	  				}, function(info) {
+	  					console.log(info);
+	  					window.location.href = '/nonfriendprofile/:' + currUser;
+	  				});
+	  			});
+	  		}
+	  	</script>
+	  	
+	  	<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<style type="text/css">
+			* {
+			 box-sizing: border-box;
+			}
+			body {
+				font-family: Arial;
+				padding: 10px;
+				background: #f1f1f1;	//8am change color							<!-- add things -->
+			}
+			.header {
+				float: left;
+				text-align: center;
+				padding: 2px 2px;
+				margin-bottom: 10px;
+				//background: white;
+			}
+			.header h1 {
+				  font-size: 35px;
+				  color: white;	
+				}
+			.topnav {
+			  overflow: hidden;
+			  background-color: #00008B;
+			}
+			
+			/* Style the topnav links */
+			.topnav a {
+			  float: right;
+			  display: block;
+			  color: white;
+			  font-size: 15px;
+			  text-align: center;
+			  padding: 30px 10px;
+			  text-decoration: none;
+			}
+			
+			/* Change color on hover */
+			.topnav a:hover {
+			  background-color: #ddd;
+			  color: black;
+			}
+			#profile-info {
+				text-align: center;
+			}
+			.form-control {
+				max-width: 20%;
+				margin-left: 40%;
+			}
+			.update {
+				max-width: 20%;
+				margin-left: 40%;
+			}
+			.postContent {
+				float: left;
+				width: 100%;
+				line-height: 20px;
+				padding: 0px 20px 20px 20px;
+			}
+			input {
+				width: 500px;
+			}
+			textarea {
+				outline: none;
+				resize: none;
+				width: 500px;						<!-- change later -->
+				height: 100px;
+				max-width: 100%;
+			}
+		</style>
+	</head>
+	
+	<body>
+	<div class="topnav">
+		<div class="header">
+			<h1> *̣̥☆‧❄‧̩̥·‧☃‧̩̥·<b><i>PennBook</i></b>‧•̥‧·‧̩̥❄‧·☆*̣̥  </h1>  
+		</div>
+			<div id="notifications">
+		    	<span id="notifications-count"></span>
+		  		<div id="notifications-dropdown"></div>
+		  	</div>
+		  	 <a href="/logout" onclick="postActiveStatusFalse()">Logout</a>
+		    <a href="/friendvisualization">Friend Graph</a>
+		    <a href="/chat">Chat</a>
+		    <a href="/profile">My Profile</a>
+		    <a class="active" href="/home">Home</a>
+		</div>
+	 
+		<% if (targetFriend != null) {%>
+			<script>
+				// AJAX REFRESH
+			  	var refresh = function() {
+	  				/* $.getJSON('/getallpublicmsgs/:' + currUser, function(data) {
+	  					console.log(data);
+	  					if (currPubMsgs.length != data.length) {
+	  						console.log("detected a new public message! refreshing now");
+	  						loadPubMsgs();
+	  					}
+	  				});  */
+	  				
+	  				document.getElementById('pub-msgs').innerHTML = '';
+	  				loadPubMsgs();
+	  				setTimeout(refresh, 3000);
+	  			}
+			
+				window.onload = function() {
+					currUser = "<%= targetFriend %>";
+					loadProfile();
+					loadFriends();
+					loadPubMsgs();
+					
+					setTimeout(refresh, 3000);
+				};
+			</script>
+		<% } %>
+		
+		<% if (message != null) {%>
+		<p><font color="red"><%= message %></p>
+		<% } %>
+		
+		<div class="profile-box">
+			<h1 id="header"></h1>
+			<div id="profile-info" class="container-md">
+				<div id="name"></div>
+				<div id="affiliation"></div>
+				<div id="birthday"></div>
+				<div id="interests">
+					<ul id="ints"></ul>
+				</div>
+			</div>
+		<div>
+			
+		<br>
+			
+		<div class="postContent">
+	 		<div class="input-group">
+	 			<div class="btn-container">
+					<button class="btn btn-primary" type="button" onClick="removeFriend()">Remove Friend</button>
+				</div>
+				<br>
+	 			<textarea id="status-content" placeholder="Write something to <%=targetFriend %>"></textarea>
+	 			<div>
+	 				<button class="btn btn-primary" type="button" onClick="postPubMsg()">Post</button>
+	 			</div>
+	 		</div>
+	  	</div>
+		
+		 <div>
+			<h2>Friends</h2>
+			<div id="friends-container"></div>
+		</div> 
+		
+		<div>
+			<h2>Public Messages</h2>
+			<div id="pub-msgs"></div>
+		</div>
+	
+	</body>
+</html>

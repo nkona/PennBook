@@ -1,0 +1,45 @@
+{
+  "name": "G12vogels",
+  "version": "2.2.0",
+  "author": "Ryan Fitzgerald <ryan@codebrewstudios.com>",
+  "description": "DynamoDB data mapper for NETS212 G12 PennBook",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "make test"
+  },
+  "repository": "git://github.com/ryanfitz/vogels.git",
+  "keywords": [
+    "datamapper",
+    "DynamoDB",
+    "aws",
+    "amazon",
+    "nosql"
+  ],
+  "engines": {
+    "node": ">=0.10.30"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "async": "^3.1.0",
+    "aws-sdk": "2.2.x",
+    "bunyan": "1.5.x",
+    "crypto-js": "^3.1.9-1",
+    "ejs": "*",
+    "express": "^3.3.8",
+    "express-session": "*",
+    "joi": "5.x.x",
+    "lodash": "4.x.x",
+    "lru-cache": "*",
+    "node-uuid": "1.4.x"
+  },
+  "devDependencies": {
+    "chai": "1.x.x",
+    "istanbul": "^0.3.5",
+    "jscoverage": "^0.5.9",
+    "jshint": "2.x.x",
+    "jshint-stylish": "2.x.x",
+    "mocha": "2.x.x",
+    "sinon": "1.12.x"
+  }
+}

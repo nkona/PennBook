@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="G12 PennBook" default="pack" basedir=".">
+  <target name="pack" description="Create an archive for submission">
+    <zip destfile="submit-finalproj.zip">
+      <zipfileset dir="." excludes="node_modules/**,submit-finalproj.zip"/>
+    </zip>
+  </target>
+	
+  <target name="javac" description="Compile java source to bytecode">
+    <mkdir dir="classes"/>
+    <javac srcdir="src" includes="**" encoding="utf-8" destdir="classes" target="1.7" nowarn="true"
+        debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+      <classpath>
+        <pathelement location="lib/hadoop-common-2.8.1.jar"/>
+        <pathelement location="lib/hadoop-mapreduce-client-core-2.8.1.jar"/>
+      </classpath>
+    </javac>
+  </target>	
+	
+  <target name="jar" depends="javac" description="Create a jar file">
+    <zip destfile="G12.jar" basedir="classes"/>
+  </target>
+</project>

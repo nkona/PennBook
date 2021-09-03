@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Chat</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		
+  		<script type="text/javascript">
+  		currUser = "";
+  		currGroups = [];
+  		chatGoers = [];
+  		
+  		window.onload = function() { 
+  			$.getJSON('/getcurruser', function(data) {
+  				console.log("current user is " + data);
+  				currUser = data;
+  				$('#user').append(data);
+  				
+  				$.getJSON('/getgroups', function(data) {
+	  				currGroups = data;
+	  				console.log("Current groups are: " + currGroups);
+	  				
+	  				for (var i = 0; i < currGroups.length; i++) {
+	  					$.getJSON('/getgroupinfo:' + currGroups[i], function(info) {
+	  						var ref = document.createElement("a");
+							var item = document.createElement("li");
+	  						var chatName = info.groupName;
+	  						if(info.groupName.length > 50) {
+	  							chatName = info.groupName.substring(0,47) + "...";
+	  						}
+	  						ref.textContent = chatName;
+	  						var visible = 'style=""';
+                            if(!info.isGroupChat) {
+                            	visible = 'style="visibility: hidden;"';
+                            }
+	  						
+	  						var editor = '<li><form class="mainChat" action="/renamegroup" method="post">' +
+	  									 '<input type="hidden" id="groupId" name="groupId" value='+info.groupID+'>' +
+  										 '<input type="text" id="newName" placeholder="New name" name="newName" required>' +
+                                         '<button type="submit">Rename Group</button></form></li>';            
+                            
+                            var abandon = '<li><form class="mainChat" action="/leavegroup" method="post">' +
+                                          '<input type="hidden" id="groupId" name="groupId" value='+info.groupID+'>' +
+                                          '<button type="submit" '+visible+'>Leave Group</button></form></li>';
+	  						
+							ref.setAttribute('href', '/activechat:' + info.groupID);
+							item.appendChild(ref);
+							$('#chats').append(item);
+							$('#renames').append(editor);
+							$('#leaves').append(abandon);
+	  					});
+	  				}
+	  			});
+  			});
+  		}
+  		</script>	
+  		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<style type="text/css">
+			* {
+			 box-sizing: border-box;
+			}
+			body {
+				font-family: Arial;
+				padding: 10px;
+				background: #f1f1f1;	//8am change color							<!-- add things -->
+			}
+			.header {
+				float: left;
+				text-align: center;
+				padding: 2px 2px;
+				margin-bottom: 10px;
+				//background: white;
+			}
+			.header h1 {
+				  font-size: 35px;
+				  color: white;	
+				}
+			.topnav {
+			  overflow: hidden;
+			  background-color: #00008B;
+			}
+			
+			/* Style the topnav links */
+			.topnav a {
+			  float: right;
+			  display: block;
+			  color: white;
+			  font-size: 15px;
+			  text-align: center;
+			  padding: 30px 10px;
+			  text-decoration: none;
+			}
+			
+			/* Change color on hover */
+			.topnav a:hover {
+			  background-color: #ddd;
+			  color: black;
+			}.searchbar, .postContent {
+				float: left;
+				width: 100%;
+				line-height: 20px;
+				padding: 0px 20px 20px 20px;
+			}
+			.chatTitle {
+				text-align: center;
+				float: left;
+				width: 100%;
+				font-size: 40x;
+				color: #00008B
+			}
+			.chatList {
+				text-align: center;
+				float: left;
+				width: 100%;
+				line-height: 20px;
+				padding: 0px 10px 20px 10px;
+				color: Black
+			}
+			input {
+				width: 500px;
+			}
+			textarea, #commentInput {
+				outline: none;
+				resize: none;
+				width: 500px;
+				height: 100px;
+				max-width: 100%;
+			}
+			.post, #post {
+				float: left;
+				padding: 20px 20px;
+			}
+			#commentInput {
+				float: left;
+				width: 500px;
+				height: 40px;
+			}
+			ul {
+    			padding: 5px;
+    			display: inline-block;
+			}
+			.mainChat {
+				font-size: 12px;
+				padding: 5px 2px;
+				color: Black;
+			}
+			.mainChat input {
+				width: auto;
+				margin: 0 10px;
+			}
+		
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 13px Helvetica, Arial; }
+		#chats { list-style-type: none;
+				text-align: left;
+				font-size: 14px;
+				padding: 10px 5px;
+				color: Black; }
+     	#chats li { padding: 10px 10px; }
+     	#chats li:nth-child(odd) { background: #eee; }
+     	#renames { list-style-type: none;
+     	           width: auto; }
+     	#renames li { padding: 3px 3px; }
+     	#renames li:nth-child(odd) { background: #eee; }
+     	#leaves { list-style-type: none; }
+     	#leaves li { padding: 3px 3px; }
+     	#leaves li:nth-child(even) { background: #eee; }
+		</style>
+	</head>
+
+	<body>
+		<div class="topnav">
+		<div class="header">
+			<h1> *̣̥☆‧❄‧̩̥·‧☃‧̩̥·<b><i>PennBook</i></b>‧•̥‧·‧̩̥❄‧·☆*̣̥  </h1>  
+		</div>
+			<div id="notifications">
+		    	<span id="notifications-count"></span>
+		  		<div id="notifications-dropdown"></div>
+		  	</div>
+		  	 <a href="/logout" onclick="postActiveStatusFalse()">Logout</a>
+		    <a href="/friendvisualization">Friend Graph</a>
+		    <a href="/chat">Chat</a>
+		    <a href="/profile">My Profile</a>
+		    <a class="active" href="/home">Home</a>
+		</div>
+  		<br>
+  		<h1 style="color:#00008B;", background color: "white", float:"top", class="chatTitle"><b><i>Chat!</b></i></h1>
+  		<div class="chatList">
+			<div id="user" style="display: none;"></div>    
+			<ul id="chats"></ul>
+			<ul id="renames"></ul>
+			<ul id="leaves"><ul>
+		</div>
+  		
+	</body>
+</html>

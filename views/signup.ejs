@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Sign Up</title>
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<style>
+		* {
+			 box-sizing: border-box;
+			}
+			body {
+				font-family: Arial;
+				padding: 10px;
+				background: #f1f1f1;	//8am change color						
+			}
+			.header {
+				float: left;
+				text-align: center;
+				padding: 2px 2px;
+				margin-bottom: 10px;
+				//background: white;
+			}
+			.header h1 {
+				  font-size: 35px;
+				  color: white;	
+				}
+			.topnav {
+			  overflow: hidden;
+			  text-align: center;
+			  background-color: #00008B;
+			  margin-bottom:10px;
+			  padding-bottom: 10px;
+			}
+			
+			body {
+				font-family: Arial, Helvetica, sans-serif;
+				font-weight: 50;
+				text-align: center;
+			}
+			
+			.div-login {
+				margin-top: 20px;
+			}
+		</style>
+	</head>
+	
+	<body>
+	<div class="topnav">
+		<h1 style="color:white"> *̣̥☆‧❄‧̩̥·‧☃‧̩̥·<b><i>PennBook</i></b>‧•̥‧·‧̩̥❄‧·☆*̣̥  </h1>  
+		
+			<div id="notifications">
+		    	<span id="notifications-count"></span>
+		  		<div id="notifications-dropdown"></div>
+		  	</div>
+		</div>
+		<h1>Create an account!</h1>
+		<% if (message != null) {%>
+		<p><font color="red"><%= message %></p>
+		<% } %>
+		<div>
+			<font color="black">
+			<form class="form-horizontal" action="/createaccount" method="post">
+				<div class="form-group">
+					<input type="text" name="emailInput" placeholder="email">
+				</div>
+				<div class="form-group">
+					<input type="text" name="passwordInput" placeholder="password">
+				</div>
+				<div class="form-group">
+					<input type="text" name="fullnameInput" placeholder="full name">
+				</div>
+				<div id="signupButton">
+					<button type="submit" class="btn btn-success">Sign Up</button>
+				</div>
+			</form>
+		</div>
+		
+		<div>
+			<p class="div-login">Already have an account? <a href="/">Login here!</a></p>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Home!</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		
+  		<script type="text/javascript">
+  			currUser = "";
+  			currPosts = [];
+  			currComments = [];
+  			currFriends = [];
+  			currActiveFriends = [];
+  			latestTimestamp = 0;
+  			notificationTimestamp = 0;
+
+  			function loadStatuses() {
+  				$.getJSON('/homeposts', function(data) {  				
+  					console.log('loading homepage posts');
+  					console.log(data);
+  					
+  					var postHTMLOut = '';
+  					for (var i = data.length - 1; i >= 0; i--) {
+  						var timestamp = data[i].createdAt;
+  						var postID = data[i].postID;
+  						var post = data[i].post;
+  						var email = data[i].email;
+  						var postCreator = data[i].postCreator;
+  						
+  						var commentID = 'comment' + data.length-1-i;
+  						
+  					   postHTMLOut += 
+  					   '<div class="post"><div class="name"><p><b>' + postCreator + '   |   ' + 
+					   '</b><span><i>' + timestamp + '</i></span></p></div><div class="inner">' + post + 
+					   
+					   '<div><input type="text" class="form-control" id="commentInput" placeholder="Write a comment...">' +
+					   '<span class="input-group-btn">'+
+					   '<button class="btn btn-primary" type="button" id="commentButton" onClick="addComment(\'' + postID + '\')">Comment</button>' + 
+					   '</span></div><div id="' + commentID + '"></div></div></div><br>';
+					   
+					    var inCurrPosts = false;
+	  					for (var j = 0; j < currPosts.length; j++) {
+	  						if (currPosts[j].postID == postID) {					   
+	  							inCurrPosts = true;
+	  							break;
+	  						}
+	  					}
+	  					
+	  					if (!inCurrPosts) {
+	  						currPosts.push({
+	  							timestamp: timestamp,
+	  							postID: postID,
+	  							post: post,
+	  							email: email,
+	  							postCreator: postCreator
+	  						});
+	  					}
+	  					
+	  					$.post('/homecomments', {
+	  						time: latestTimestamp,
+	  						postid: postID
+	  					}, function(comments) {
+	  						data = JSON.parse(comments);
+	  						console.log(comments);
+	
+	  						var commentsHTMLOut = '';
+	  						for (var i = data.length-1; i >= 0; i--) {
+	  							commentsHTMLOut += 
+	  							'<div><p style="margin-top: 10px;" > <span><i>' 
+    							+ timestamp + " | " + '</i></span> <b>' + data[i].comment + '</b> </p></div>';
+	  						}
+	  						
+	  						console.log(commentsHTMLOut);
+
+	  						
+	  						var inCurrComments = false;
+		  					for (var j = 0; j < currComments.length; j++) {
+		  						if (currComments[j] == data[j].comment) {					   
+		  							inCurrComments = true;
+		  							break;
+		  						}
+		  					}
+		  					if (!inCurrComments) {
+		  						currComments.push(data[j].comment);
+		  					}
+	  						
+	  						$('#' + commentID).append(commentsHTMLOut);
+	  					});
+					}
+  					$("#posts").append(postHTMLOut);
+  					latestTimestamp = data[data.length - 1].createdAt;
+  				});	//end get json /homeposts
+  				
+  				
+  			}
+  			
+  			function loadNewStatuses() {
+  				console.log("latest timestamp is: " + latestTimestamp);
+  				$.post('/homerefresh', {
+  					time: latestTimestamp
+  				}, function(data) {
+  					console.log('loading new statuses');
+  					data = JSON.parse(data);
+  					
+  					var postHTMLOut = '';
+  					var timestamp = data[0].createdAt;
+  					var postID = data[0].postID;
+  					var post = data[0].post;
+  					var email = data[0].email;
+  					var postCreator = data[0].postCreator;
+  					
+  					console.log("postCreator is: " + postCreator);
+  						
+  					postHTMLOut = 
+  					'<div class="post"><div class="name"><p><b>' + postCreator + '   |   ' + 
+					'</b><span><i>' + timestamp + '</i></span></p></div><div class="inner">' + post + 
+					'<div><input type="text" class="form-control" id="commentInput" placeholder="Write a comment...">' +
+				    '<span class="input-group-btn">'+
+				    '<button class="btn btn-primary" type="button" id="commentButton" onClick="addComment(\'' + postID + '\')">Comment</button>' + 
+				    '</span></div><div id="comment-"+postID></div></div></div><br>';
+				    
+				    var inCurrPosts = false;
+	  				for (var j = 0; j < currPosts.length; j++) {
+	  					if (currPosts[j].postID == postID) {
+	  						inCurrPosts = true;
+	  						break;
+	  					}
+	  				}
+	  				if (!inCurrPosts) {
+	  					currPosts.push({
+	  						timestamp: timestamp,
+	  						postID: postID,
+	  						post: post,
+	  						email: email,
+	  						postCreator: postCreator
+	  					});
+	  				}
+	  				
+	  				$.post('/homecomments', {
+	  						time: latestTimestamp,
+	  						postid: postID
+	  					}, function(comments) {
+	  						data = JSON.parse(comments);
+	  						console.log(comments);
+	  						
+	  						var commentsHTMLOut = '';
+	  						for (var i = data.length-1; i >= 0; i--) {
+	  							commentsHTMLOut += 
+	  							'<div><p style="margin-top: 10px;" > <span><i>' 
+    							+ data[i].createdAt + " | " + '</i></span> <b>' + data[i].comment + '</b> </p></div>';
+	  						}
+	  						
+	  						console.log(commentsHTMLOut);
+
+	  						
+	  						var inCurrComments = false;
+		  					for (var j = 0; j < currComments.length; j++) {
+		  						if (currComments[j] == data[j].comment) {					   
+		  							inCurrComments = true;
+		  							break;
+		  						}
+		  					}
+		  					if (!inCurrComments) {
+		  						currComments.push(data[j].comment);
+		  					}
+	  						
+	  						$('#' + commentID).append(commentsHTMLOut);
+	  					});
+	  							
+	  				$("#posts").prepend(postHTMLOut);
+	  				latestTimestamp = data[0].createdAt;
+  				});
+  			}
+  			
+  			function loadFriends() {
+	  			$.getJSON('/getfriends/:' + currUser, function(data) {
+	  				currFriends = data;
+	  				console.log("currFriends are: " + currFriends);
+	  			});
+	  		}
+	  		
+	  		function loadActiveFriends() {
+	  			$.getJSON('/getactivefriends', function(data) {
+	  				currActiveFriends = data;
+	  				console.log("currActiveFriends are:");
+	  				console.log(data);
+	  				
+	  				var activeFriendsHTMLOut = '';
+	  				for (var i = 0; i < data.length; i++) {
+	  					var friendName = data[i].name;
+	  					var friendEmail = data[i].email;
+	  					
+	  					activeFriendsHTMLOut += 
+	  					'<ul id =' + '"' + friendEmail + '"' + ' onClick="getFriendPage(\'' + friendEmail + '\')"><a>' + friendName + '</a></ul>';
+	  				}
+	  				
+	  				$("#active-friends").append(activeFriendsHTMLOut);
+	  			});
+	  		}
+	  		
+	  		function getFriendPage(friendEmail) {
+	  			console.log(friendEmail);
+	  			
+	  			var targetFriend = document.getElementById(friendEmail).innerHTML;
+	  			window.location.href = '/friendprofile/:' + friendEmail;
+	  		}
+  		
+  			function addPost() {
+  				$.post('/updatestatus', {
+  					status: document.getElementById('status-content').value
+  				}, function(data, err) {
+  					$("#status-content").val('');
+  					if (err) {
+  						console.log(err);
+  					} else if (data) {
+  						console.log('successfully added post');
+  					}
+  				});
+  			}
+  			
+  			function addComment(postID) {
+  				$.post('/addcomment', {
+  					postID: postID,
+  					comment: document.getElementById('commentInput').value
+  				}, function(data) {
+  					console.log('successfully added comment');
+  					console.log(data);
+  						
+  					var commentHTMLOut = 
+  					'<div class="inner"><p><b>' + currUser + '</b>: ' 
+    				+ data.comment + '</p></div>';
+    				
+  					$("#comment-"+data.postID).prepend(commentHTMLOut);
+  				});
+  			}
+  			
+  			function getPage(email) {
+  				var isFriend = false;
+  				for (var i = 0; i < currFriends.length; i++) {
+  					if (currFriends[i] == email) {
+  						isFriend = true;
+  						window.location.href = '/friendprofile/:' + email;
+  					}
+  				}
+  				if (!isFriend) {
+  					window.location.href = '/nonfriendprofile/:' + email;
+  				}
+	  		}
+  			
+  			// SEARCHBAR
+  			function getSearchSuggestions() {
+  				var term = document.getElementById('inputField').value;
+  				console.log('/getsuggestions/:' + term);
+  				
+  				if (term != "") {
+  					$.getJSON('/getsuggestions/:' + term, function(data) {
+  						var suggestionsHTMLOut = '<ul class="list-group">\n';
+  						for (var i = 0; i < data.length; i++) {
+  							if (data[i].email == currUser) {
+  								continue;
+  							}
+  							var targetUserName = data[i].name;
+  							var targetUserEmail = data[i].email;
+  							suggestionsHTMLOut += '<li id=' + targetUserEmail + ' class="list-group-item" onClick="getPage(\'' + targetUserEmail + '\')">' + targetUserName + '</li>\n';
+  						}
+  						suggestionsHTMLOut += "</ul>\n";
+  						$("#search-suggestions").html(suggestionsHTMLOut);
+  					});
+  				} else {
+  					$("#search-suggestions").hide();
+  				}
+  			}
+  			
+  			function postActiveStatusFalse() {
+  				$.post('/updateactivestatus', {
+  					email: currUser,
+  					status: new Boolean(false)
+  				}, function(err, data) {
+  					if (err) {
+  						console.log("error setting active status to false");
+  					} else {
+  						console.log("successfully set active status to false");
+  					}
+  				});
+  			}
+  			
+  			// AJAX REFRESH
+  			var refresh = function() {
+  				$.getJSON('/homeposts', function(data) {
+  					if ((currPosts.length != data.length) && data.length != 0) {
+  						console.log('new post detected! refreshing now');
+  						loadNewStatuses();
+  					}
+  				});
+  				$.getJSON('/getfriends/:' + currUser, function(data) {
+  					if (currFriends.length != data.length) {
+  						console.log('new friend added! refreshing now');
+  						loadFriends();
+  					}
+  				});
+  				$.getJSON('/getactivefriends', function(data) {
+  					if (currActiveFriends.length != data.length) {
+  						console.log("a friend either logged on or off! refreshing now");
+  						document.getElementById('active-friends').innerHTML = '';
+  						loadActiveFriends();
+  					}
+  				});
+  				
+  				$.post('/getinvites', {
+  					time: notificationTimestamp
+  				}, function(data) {
+  					var notifs = JSON.parse(data);
+  					if (data != []) {
+  					notificationTimestamp = notifs[notifs.length-1].createdAt;
+  						for (var i = notifs.length - 1; i >= 0; i--) {
+  							var notification = notifs[i].sender + ' just sent you a message!';
+  							alert(notification);
+  						}
+  					}
+  				}); 
+  			 setTimeout(refresh, 3000);
+  			}
+  			
+  			// MAIN
+  			window.onload = function() {
+  				$.getJSON('/getcurruser', function(data) {
+  					console.log("current user is " + data);
+  					currUser = data;
+  				});
+  				
+  				loadFriends();
+  				loadActiveFriends();
+  				loadStatuses();
+  				
+  				setTimeout(refresh, 3000);
+  			}
+  		</script>	
+  		
+  		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<style type="text/css">
+		* {
+			 box-sizing: border-box;
+			}
+			body {
+				font-family: Arial;
+				padding: 10px;
+				background: #f1f1f1;	//8am change color							<!-- add things -->
+			}
+			.header {
+				float: left;
+				text-align: center;
+				padding: 2px 2px;
+				margin-bottom: 10px;
+				//background: white;
+			}
+			.header h1 {
+				  font-size: 35px;
+				  color: white;	
+				}
+			.topnav {
+			  overflow: hidden;
+			  background-color: #00008B;
+			}
+			
+			/* Style the topnav links */
+			.topnav a {
+			  float: right;
+			  display: block;
+			  color: white;
+			  font-size: 15px;
+			  text-align: center;
+			  padding: 30px 10px;
+			  text-decoration: none;
+			}
+			
+			/* Change color on hover */
+			.topnav a:hover {
+			  background-color: #ddd;
+			  color: black;
+			}
+			/*.topnav a {
+				float: right;
+				font-size: 20px;
+				padding: 15px 10px;
+				color: Green;					<!-- change later -->
+			}*/
+			.searchbar, .postContent {
+				float: left;
+				width: 100%;
+				line-height: 30px;
+				padding: 0px 20px 20px 20px;
+			}
+			.leftcolumn {   
+			  float: left;
+			  width: 75%;
+			}
+			.rightcolumn {
+			  float: left;
+			  width: 25%;
+			  background-color: #f1f1f1;
+			  //padding-left: 15px;
+			  padding: 20px;
+			  padding-top: 2px;
+			}
+			.card {
+			  background-color: white;
+			  padding: 20px;
+			  margin-top: 5px;
+			}
+			input {
+				width: 500px;
+			}
+			textarea, #commentInput {
+				outline: none;
+				resize: none;
+				width: 500px;
+				height: 100px;
+				max-width: 100%;
+			}
+			.post, #post {
+				float: left;
+				padding: 20px 20px;
+			}
+			#commentInput {
+				float: left;
+				width: 500px;
+				height: 40px;
+			}
+			.activeFriends {
+			
+			}
+		</style>
+	</head>
+
+	<body>
+	<div class="topnav">
+		<div class="header">
+			<h1> *̣̥☆‧❄‧̩̥·‧☃‧̩̥·<b><i>PennBook</i></b>‧•̥‧·‧̩̥❄‧·☆*̣̥  </h1>  
+		</div>
+			<div id="notifications">
+		    	<span id="notifications-count"></span>
+		  		<div id="notifications-dropdown"></div>
+		  	</div>
+		  	 <a href="/logout" onclick="postActiveStatusFalse()">Logout</a>
+		    <a href="/friendvisualization">Friend Graph</a>
+		    <a href="/chat">Chat</a>
+		    <a href="/profile">My Profile</a>
+		    <a class="active" href="/home">Home</a>
+		</div>
+	<br>
+  	<div class="row">
+  		<div class ="leftcolumn">
+		  		<div class="searchbar">    
+				    <form>
+				    	<input type="search" name="usernameInput" id="inputField" autocomplete="off" onKeyUp="getSearchSuggestions()" placeholder="Search!">
+		  				<i class="fa fa-search"></i>
+		  				<br>
+		  				<div id="search-suggestions" class="dropdown"></div>
+		  			</form>
+				</div>
+			
+			 	<div class="postContent">
+			 		<div class="input-group">
+			 			<textarea id="status-content" placeholder="What's on your mind?"></textarea>
+			 		</div>
+					<button class="btn btn-primary" type="button" style="margin-top:10px" onClick="addPost()">Post</button>
+			  	</div>
+	  </div>
+	  
+	  	<div class="rightcolumn">
+   			 <div class="card">
+			  	<div class="activeFriends">
+			  		<h2 style="color:#00008B;", background color: "white", float:"top"><b><i>Active Friends</b></i></h2>
+			  		<div id="active-friends"></div>
+			  	</div>
+			  </div>
+		</div>
+  	</div>	
+  	
+  	<div class="row">
+	  	<div id="posts">
+		</div>
+	</div>  	
+  		
+	</body>
+</html>
