@@ -1,15 +1,15 @@
 # PennBook
 
 Pennbook is our take on building a social networking site similar to Facebook. Although the backend databases are now offline, the app can be 
-run by following the instructions below and creating the requisite tables on AWS and uploading your account information in config. Our 
-application implements an encrypted log-in, individual and personalizable profile pages, home pages that contain timelines of status updates, 
-new friendships, and profile updates, as well as allowing for commenting. Naturally, people can add or delete friends, and also see their 
-friends' friends and comment on their wall on their friends' profile pages. Users can also see which of their friends are currently active.
+run by following the instructions below, creating the requisite tables on AWS and uploading your account information in config. Our application 
+implements an encrypted log-in, individual and personalizable profile pages, home pages that contain timelines of status updates, new 
+friendships, and profile updates, as well as commenting. Naturally, people can add or delete friends, and also see their friends' friends and 
+comment on their wall on their friends' profile pages. Users can also see which of their friends are currently active.
 
-All updates are made dynamically, meaning that refreshes are not required to see updates to relevant pages, particularly on the home page 
-timeline. There is also a chat function allowing for chats between friends and group chats, where messages are sent dynamically and are saved 
-on the backend for persistence, allowing one to close the page and/or log out and come back to resume the chat later. Finally, we have also 
-implemented a friend recommendation algorithm using Hadoop MapReduce that can be run from the command line. The full feature list is below.
+All updates are made dynamically, meaning that refreshing is not required to see page updates, particularly on the home page timeline. There is 
+also a chat function allowing for chats between friends and group chats, where messages are sent dynamically and are saved on the backend for 
+persistence, allowing one to close the page and/or log out and come back to resume the chat later. Finally, we have also implemented a friend 
+recommendation algorithm using Hadoop MapReduce that can be run from the command line. The full feature list is below.
 
 
 ## List of Features Implemented
